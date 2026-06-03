@@ -96,6 +96,9 @@ install_all() {
 
   log "Installing Skyfall-GS python requirements"
   cd "$SKYFALL_REPO_DIR"
+  # setuptools>=81 dropped the bundled pkg_resources, which OpenAI CLIP's
+  # setup.py (a Skyfall-GS dependency) still imports. Pin below 81.
+  pip install --upgrade pip wheel "setuptools<81"
   pip install -r requirements.txt
   pip install --force-reinstall torch torchvision torchaudio
 
