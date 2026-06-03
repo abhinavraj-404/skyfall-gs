@@ -11,7 +11,9 @@
 #   bash setup_runpod.sh --serve     # full install, then start the backend
 #   bash setup_runpod.sh --serve-only# skip install, just start the backend
 # =============================================================================
-set -euo pipefail
+# Note: we intentionally avoid `set -u` (nounset) because conda's
+# activate/deactivate hook scripts reference unbound variables and would abort.
+set -eo pipefail
 
 # --- Settings (override via env) --------------------------------------------
 WORKDIR="${WORKDIR:-/workspace}"
