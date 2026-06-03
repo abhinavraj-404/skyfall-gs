@@ -151,7 +151,8 @@ install_all() {
   CONSTRAINTS="$WORKDIR/.pip-constraints.txt"
   echo "setuptools<81" > "$CONSTRAINTS"
   export PIP_CONSTRAINT="$CONSTRAINTS"
-  export PIP_BUILD_CONSTRAINT="$CONSTRAINTS"   # pip>=26.2 build-constraint path
+  # NOTE: do NOT export PIP_BUILD_CONSTRAINT globally — pip rejects it together
+  # with --no-build-isolation. We apply it inline only on isolated installs.
 
   # --- CLIP (must precede requirements; no isolation) --------------------
   log "Installing OpenAI CLIP (no build isolation)"
@@ -176,7 +177,9 @@ PY
   # --- remaining requirements (CLIP & torch already satisfied) -----------
   log "Installing remaining Skyfall-GS requirements"
   cd "$SKYFALL_REPO_DIR"
-  pip install -r requirements.txt
+  # This step uses build isolation, so pin the build overlay's setuptools too
+  # (inline so it never collides with the --no-build-isolation steps).
+  PIP_BUILD_CONSTRAINT="$CONSTRAINTS" pip install -r requirements.txt
   pin_setuptools
 
   # --- CUDA submodules (no isolation; import torch at build time) --------
