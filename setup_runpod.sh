@@ -78,6 +78,11 @@ install_all() {
     git -C "$SKYFALL_REPO_DIR" submodule update --init --recursive || true
   fi
 
+  log "Accepting Anaconda channel Terms of Service"
+  # Recent conda versions refuse the default channels until ToS is accepted.
+  conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main 2>/dev/null || true
+  conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r 2>/dev/null || true
+
   log "Creating conda env '$ENV_NAME' (python 3.10)"
   if ! conda env list | grep -qE "^\s*$ENV_NAME\s"; then
     conda create -y -n "$ENV_NAME" python=3.10
